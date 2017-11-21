@@ -23,12 +23,12 @@ namespace Exercise_2
             Console.ReadKey();
         }
 
-        static List<RootObject> GetListObjects()
+        static List<User> GetListObjects()
         {
             var url = "https://jsonplaceholder.typicode.com";
             var restAdapter = new RestAdapter(url);
             IJsonPlaceHolder service = restAdapter.Create<IJsonPlaceHolder>();
-            RestResponse<List<RootObject>> listResponse = service.Get();
+            RestResponse<List<User>> listResponse = service.Get();
             return listResponse.Data;
         }
     }

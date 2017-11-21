@@ -10,7 +10,7 @@ namespace Exercise_2
 {
     public interface IJsonPlaceHolder
     {
-        [Get("/posts")]
-        RestResponse<List<RootObject>> Get();
+        [Get("/users")]
+        RestResponse<List<User>> Get();
     }
 }
