@@ -1,0 +1,44 @@
+﻿{
+  "types": {
+    "0": "Danabus - Liên Hệ: Contact@Danabus.Vn",
+    "1": "Feeder Bus Services",
+    "2": "Nite Bus Services"
+  },
+  "services": [
+    {
+      "no": "5",
+      "routes": 2,
+      "type": "0",
+      "operator": "go-ahead",
+      "name": "Nguyễn Tất Thành - Xuân Diệu"
+    },
+    {
+      "no": "7",
+      "routes": 2,
+      "type": "0",
+      "operator": "go-ahead",
+      "name": "Xuân Diệu - Metro - Phạm Hùng"
+    },
+    {
+      "no": "8",
+      "routes": 1,
+      "type": "0",
+      "operator": "go-ahead",
+      "name": "Thọ Quang - Phạm Hùng"
+    },
+    {
+      "no": "11",
+      "routes": 1,
+      "type": "0",
+      "operator": "go-ahead",
+      "name": "Xuân Diệu - Lotte Mart"
+    },
+    {
+      "no": "12",
+      "routes": 1,
+      "type": "0",
+      "operator": "sbs",
+      "name": "Thọ Quang - Trường Sa"
+    }
+  ]
+}
