@@ -23,8 +23,34 @@ namespace Exercise_5
         static void ConvertJsonToXml(string jsonInputPath, string xmlOutputPath)
         {
             var xmlString = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                Encoding.ASCII.GetBytes(ReadFromFile(jsonInputPath)), new XmlDictionaryReaderQuotas())).ToString();
-            WriteToFile(xmlString, xmlOutputPath);
+                Encoding.ASCII.GetBytes(ReadFile(jsonInputPath)), new XmlDictionaryReaderQuotas())).ToString();
+            WriteFile(xmlOutputPath, xmlString);
+        }
+
+        static string ReadFile(string filePath)
+        {
+            try
+            {
+                return File.ReadAllText(filePath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        static void WriteFile(string filePath, string content)
+        {
+            try
+            {
+                File.WriteAllText(filePath, content, Encoding.UTF8);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
         static string ReadFromFile(string filePath)
         {
