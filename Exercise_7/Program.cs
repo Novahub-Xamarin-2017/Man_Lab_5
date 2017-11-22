@@ -14,49 +14,36 @@ namespace Exercise_7
     {
         static void Main(string[] args)
         {
-            ConvertJsonToXml("bus-services.json", "bus-services.xml");
-            ConvertJsonToXml("bus-services-5.json", "bus-services-5.xml");
-            ConvertJsonToXml("bus-services-7.json", "bus-services-7.xml");
-            ConvertJsonToXml("bus-services-8.json", "bus-services-8.xml");
-            ConvertJsonToXml("bus-services-11.json", "bus-services-11.xml");
-            ConvertJsonToXml("bus-services-12.json", "bus-services-12.xml");
+            List<string> files = new List<string>(){"bus-services", "bus-services-5", "bus-services-7", "bus-services-8", "bus-services-11", "bus-services-12" };
+            files.ForEach(ConvertJsonToXml);
             Console.ReadKey();
         }
-        static void ConvertJsonToXml(string jsonInputPath, string xmlOutputPath)
+        static void ConvertJsonToXml(string fileName)
         {
+            string fileInputPath = $"{fileName}.json";
+            string fileOutputPath = $"{fileName}.xml";
             var xmlString = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                Encoding.UTF8.GetBytes(ReadFromFile(jsonInputPath)), new XmlDictionaryReaderQuotas())).ToString();
-            WriteToFile(xmlString, xmlOutputPath);
+                Encoding.UTF8.GetBytes(ReadFromFile(fileInputPath)), new XmlDictionaryReaderQuotas())).ToString();
+            WriteToFile(xmlString, fileOutputPath);
         }
         static string ReadFromFile(string filePath)
         {
-            string strOutput = "";
             try
             {
-                using (StreamReader sr = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        strOutput += line + "\n";
-                    }
-                }
+                return File.ReadAllText(filePath);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                throw;
             }
-            return strOutput;
         }
 
         static void WriteToFile(string content, string filePath)
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filePath))
-                {
-                    sw.WriteLine(content);
-                }
+               File.WriteAllText(filePath, content, Encoding.UTF8);
             }
             catch (Exception e)
             {
