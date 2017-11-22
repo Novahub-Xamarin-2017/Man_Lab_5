@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
+using RestSharp;
+using Retrofit.Net;
 
 namespace Exercise_1
 {
@@ -14,116 +16,77 @@ namespace Exercise_1
     {
         static void Main(string[] args)
         {
+            var dataCenter = "us17";
+            var apiKey = "147a8c5d7fa281cd9a833e63b7f9eb7d-us17";
+            var listId = "5008e2e46c";
+            //AddEmailToList(dataCenter, apiKey, listId, "vanman3.lqd@gmail.com", "Man", "Nguyen");
+            //CreateCampaign(dataCenter, apiKey, listId);
+            var campaignId = "4b723e0720";
+            //SetContent(dataCenter, apiKey, campaignId);
+            SendEmail(dataCenter, apiKey, campaignId);
+            Console.ReadKey();
+
         }
 
-        static string CreateList(string dataCenter, string apiKey)
+        static void CreateList(string dataCenter, string apiKey)
         {
-            var sampleList = JsonConvert.SerializeObject(
+            var listServices = CreateService<IList>(apiKey, dataCenter);
+            var listObject = new
+            {
+                name = "List",
+                contact = new
+                {
+                    company = "Novahub Studio",
+                    address1 = "271",
+                    address2 = "Nguyen Van Linh",
+                    city = "DN",
+                    state = "GA",
+                    zip = "01221",
+                    country = "VI",
+                    phone = ""
+                },
+                permission_reminder = "Remind something...",
+                campaign_defaults = new
+                {
+                    from_name = "Man",
+                    from_email = "vanman.lqd@gmail.com",
+                    subject = "MailChimp Demo",
+                    language = "en",
+                },
+                email_type_option = true
+            };
+
+            var listRespone = listServices.CreateList(listObject);
+            Console.WriteLine(listRespone.ResponseStatus);
+        }
+
+        static void AddEmailToList(string dataCenter, string apiKey, string listId, string subscribedEmail, string firstName, string lastName)
+        {
+            var listServices = CreateService<IList>(apiKey, dataCenter);
+            var emailObject = CreateEmailObject(subscribedEmail, firstName, lastName);
+            var listResponse = listServices.AddEmailToList(listId, CalculateMd5Hash(subscribedEmail), emailObject);
+            Console.WriteLine(listResponse.ResponseStatus);
+        }
+
+        static object CreateEmailObject(string email, string firstName, string lastName)
+        {
+            return new
+            {
+                email_address = email,
+                merge_fields =
                 new
                 {
-                    name = "sample List",
-                    contact = new
-                    {
-                        company = "Xamarin Org",
-                        address1 = "Da Nang",
-                        address2 = "Da Nang",
-                        city = "DN",
-                        state = "GA",
-                        zip = "01203021",
-                        country = "VI",
-                        phone = ""
-                    },
-                    permission_reminder = "Remind something...",
-                    campaign_defaults = new
-                    {
-                        from_name = "Man",
-                        from_email = "vanman.lqd@gmail.com",
-                        subject = "MailChimp Demo",
-                        language = "en",
-                    },
-                    email_type_option = true
-                }
-            );
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/lists");
-
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("Accept", "application/json");
-                    webClient.Headers.Add("Authorization", "apikey " + apiKey);
-
-                    return webClient.UploadString(uri, "POST", sampleList);
-                }
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
-        }
-        static string GetLists(string dataCenter, string apiKey, string listId = "")
-        {
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/lists/{listId}");
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("Accept", "application/json");
-                    webClient.Headers.Add("Authorization", $"apikey {apiKey}");
-                    return webClient.DownloadString(uri);
-                }
-
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
-        }
-        static string AddOrUpdateListMember(string dataCenter, string apiKey, string listId, string subscriberEmail)
-        {
-            var sampleListMember = JsonConvert.SerializeObject(
-                new
-                {
-                    email_address = subscriberEmail,
-                    merge_fields =
-                    new
-                    {
-                        FNAME = "Foo",
-                        LNAME = "Bar"
-                    },
-                    status_if_new = "subscribed"
-                });
-
-            var hashedEmailAddress = string.IsNullOrEmpty(subscriberEmail) ? "" : CalculateMd5Hash(subscriberEmail.ToLower());
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/lists/{listId}/members/{hashedEmailAddress}");
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("Accept", "application/json");
-                    webClient.Headers.Add("Authorization", "apikey " + apiKey);
-
-                    return webClient.UploadString(uri, "PUT", sampleListMember);
-                }
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+                    FNAME = firstName,
+                    LNAME = lastName
+                },
+                status_if_new = "subscribed"
+            };
         }
 
-        static string CreateCampaign(string dataCenter, string apiKey, string listId)
+        static void CreateCampaign(string dataCenter, string apiKey, string listId)
         {
-            var campaign = JsonConvert.SerializeObject(new
+            var campaignServices = CreateService<ICampaign>(apiKey, dataCenter);
+            var campaignObject = new
             {
                 recipients = new
                 {
@@ -136,83 +99,33 @@ namespace Exercise_1
                     reply_to = "vanman.lqd@gmail.com",
                     from_name = "Man"
                 }
-            });
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/campaigns");
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("content-type", "application/json");
-                    webClient.Headers.Add("Authorization", "apikey " + apiKey);
-
-                    return webClient.UploadString(uri, "POST", campaign);
-
-                }
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+            };
+            var campaignResponse = campaignServices.CreateCampaign(campaignObject);
+            Console.WriteLine(campaignResponse.ResponseStatus);
         }
-        static string SetContent(string dataCenter, string apiKey, string campaignId)
+
+        static void SetContent(string dataCenter, string apiKey, string campaignId)
         {
-            var content = JsonConvert.SerializeObject(new
+            var campaignServices = CreateService<ICampaign>(apiKey, dataCenter);
+            var contentObject = new
             {
                 html = "<p>Hello there.</p>"
-            });
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/campaigns/{campaignId}/content");
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("content-type", "application/json");
-                    webClient.Headers.Add("Authorization", $"apikey {apiKey}");
-
-                    return webClient.UploadString(uri, "PUT", content);
-
-                }
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+            };
+            var campaignResponse = campaignServices.SetCampaignContent(campaignId, contentObject);
+            Console.WriteLine(campaignResponse.ResponseStatus);
         }
-        static string SendEmail(string dataCenter, string apiKey, string campaignId)
+
+        static void SendEmail(string dataCenter, string apiKey, string campaignId)
         {
-            var content = JsonConvert.SerializeObject(new
-            {
-
-            });
-            var uri = string.Format($"https://{dataCenter}.api.mailchimp.com/3.0/campaigns/{campaignId}/actions/send");
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers.Add("content-type", "application/json");
-                    webClient.Headers.Add("Authorization", "apikey " + apiKey);
-
-                    return webClient.UploadString(uri, "POST", content);
-
-                }
-            }
-            catch (WebException we)
-            {
-                using (var sr = new StreamReader(we.Response.GetResponseStream()))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+            var campaignServices = CreateService<ICampaign>(apiKey, dataCenter);
+            var campaignResponse = campaignServices.SendEmail(campaignId);
+            Console.WriteLine(campaignResponse.ResponseStatus);
         }
+
         static string CalculateMd5Hash(string input)
         {
             var md5 = System.Security.Cryptography.MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
             byte[] hash = md5.ComputeHash(inputBytes);
             var sb = new StringBuilder();
             foreach (var @byte in hash)
@@ -220,6 +133,15 @@ namespace Exercise_1
                 sb.Append(@byte.ToString("X2"));
             }
             return sb.ToString();
+        }
+
+        static T CreateService<T>(string apiKey, string dataCenter) where T : class
+        {
+            var url = $"https://{dataCenter}.api.mailchimp.com/3.0/";
+            var restClient = new RestClient(url);
+            restClient.Authenticator = new HttpBasicAuthenticator("username", apiKey);
+            var restAdapter = new RestAdapter(restClient);
+            return restAdapter.Create<T>();
         }
     }
 }
