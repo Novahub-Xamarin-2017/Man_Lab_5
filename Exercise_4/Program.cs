@@ -22,42 +22,32 @@ namespace Exercise_4
         static void ConvertJsonToXml(string jsonInputPath, string xmlOutputPath)
         {
             var xmlString = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                Encoding.ASCII.GetBytes(ReadFromFile(jsonInputPath)), new XmlDictionaryReaderQuotas())).ToString();
-            WriteToFile(xmlString, xmlOutputPath);
+                Encoding.ASCII.GetBytes(ReadFile(jsonInputPath)), new XmlDictionaryReaderQuotas())).ToString();
+            WriteFile(xmlOutputPath, xmlString);
         }
-        static string ReadFromFile(string filePath)
+
+        static string ReadFile(string filePath)
         {
-            string strOutput = "";
             try
             {
-                using (StreamReader sr = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        strOutput += line + "\n";
-                    }
-                }
+                return File.ReadAllText(filePath);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                throw;
             }
-            return strOutput;
         }
 
-        static void WriteToFile(string content, string filePath)
+        static void WriteFile(string filePath, string content)
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filePath))
-                {
-                    sw.WriteLine(content);
-                }
+                File.WriteAllText(filePath, content, Encoding.UTF8);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
                 throw;
             }
         }
