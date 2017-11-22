@@ -22,43 +22,33 @@ namespace Exercise_6
         static void ConvertXmlToJson(string xmlFilePath, string jsonFilePath)
         {
             XmlDocument xmlFile = new XmlDocument();
-            xmlFile.LoadXml(ReadFromFile(xmlFilePath));
-            WriteToFile(JsonConvert.SerializeXmlNode(xmlFile), jsonFilePath);
+            xmlFile.LoadXml(ReadFile(xmlFilePath));
+            WriteFile(jsonFilePath, JsonConvert.SerializeXmlNode(xmlFile));
         }
-        static string ReadFromFile(string filePath)
+    
+       
+        static string ReadFile(string filePath)
         {
-            string strOutput = "";
             try
             {
-                using (StreamReader sr = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        strOutput += line + "\n";
-                    }
-                }
+                return File.ReadAllText(filePath);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                throw;
             }
-            return strOutput;
         }
 
-        static void WriteToFile(string content, string filePath)
+        static void WriteFile(string filePath, string content)
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filePath))
-                {
-                    sw.WriteLine(content);
-                }
+                File.WriteAllText(filePath, content);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Console.WriteLine(e.Message);
             }
         }
     }
