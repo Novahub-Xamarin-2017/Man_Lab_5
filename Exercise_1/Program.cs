@@ -19,10 +19,14 @@ namespace Exercise_1
             var dataCenter = "us17";
             var apiKey = "147a8c5d7fa281cd9a833e63b7f9eb7d-us17";
             var listId = "5008e2e46c";
-            //AddEmailToList(dataCenter, apiKey, listId, "vanman3.lqd@gmail.com", "Man", "Nguyen");
-            //CreateCampaign(dataCenter, apiKey, listId);
             var campaignId = "4b723e0720";
-            //SetContent(dataCenter, apiKey, campaignId);
+            Console.Write("Enter the email to: ");
+            var emailTo = Console.ReadLine();
+            AddEmailToList(dataCenter, apiKey, listId, emailTo, "Man", "Nguyen");
+            Console.Write("Enter the email content: ");
+            var emailContent = Console.ReadLine();
+            
+            //SetContent(dataCenter, apiKey, campaignId, emailContent);
             SendEmail(dataCenter, apiKey, campaignId);
             Console.ReadKey();
 
@@ -104,12 +108,12 @@ namespace Exercise_1
             Console.WriteLine(campaignResponse.ResponseStatus);
         }
 
-        static void SetContent(string dataCenter, string apiKey, string campaignId)
+        static void SetContent(string dataCenter, string apiKey, string campaignId, string content)
         {
             var campaignServices = CreateService<ICampaign>(apiKey, dataCenter);
             var contentObject = new
             {
-                html = "<p>Hello there.</p>"
+                html = $"<p>{content}</p>"
             };
             var campaignResponse = campaignServices.SetCampaignContent(campaignId, contentObject);
             Console.WriteLine(campaignResponse.ResponseStatus);
