@@ -26,7 +26,6 @@ namespace Exercise_6
             WriteFile(jsonFilePath, JsonConvert.SerializeXmlNode(xmlFile));
         }
     
-       
         static string ReadFile(string filePath)
         {
             try
