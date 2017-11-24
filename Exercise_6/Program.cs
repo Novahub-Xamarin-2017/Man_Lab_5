@@ -22,33 +22,8 @@ namespace Exercise_6
         static void ConvertXmlToJson(string xmlFilePath, string jsonFilePath)
         {
             XmlDocument xmlFile = new XmlDocument();
-            xmlFile.LoadXml(ReadFile(xmlFilePath));
-            WriteFile(jsonFilePath, JsonConvert.SerializeXmlNode(xmlFile));
-        }
-    
-        static string ReadFile(string filePath)
-        {
-            try
-            {
-                return File.ReadAllText(filePath);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
-        static void WriteFile(string filePath, string content)
-        {
-            try
-            {
-                File.WriteAllText(filePath, content);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            xmlFile.LoadXml(File.ReadAllText(xmlFilePath));
+            File.WriteAllText(jsonFilePath, JsonConvert.SerializeXmlNode(xmlFile), Encoding.UTF8);
         }
     }
 }
