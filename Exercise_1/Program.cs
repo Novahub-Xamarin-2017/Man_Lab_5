@@ -19,14 +19,15 @@ namespace Exercise_1
             var dataCenter = "us17";
             var apiKey = "147a8c5d7fa281cd9a833e63b7f9eb7d-us17";
             var listId = "5008e2e46c";
-            var campaignId = "4b723e0720";
+            //CreateCampaign(dataCenter, apiKey, listId);
+            var campaignId = "0e212308ef";
             Console.Write("Enter the email to: ");
             var emailTo = Console.ReadLine();
             AddEmailToList(dataCenter, apiKey, listId, emailTo, "Man", "Nguyen");
             Console.Write("Enter the email content: ");
             var emailContent = Console.ReadLine();
-            
-            //SetContent(dataCenter, apiKey, campaignId, emailContent);
+
+            SetContent(dataCenter, apiKey, campaignId, emailContent);
             SendEmail(dataCenter, apiKey, campaignId);
             Console.ReadKey();
 
@@ -67,25 +68,22 @@ namespace Exercise_1
         static void AddEmailToList(string dataCenter, string apiKey, string listId, string subscribedEmail, string firstName, string lastName)
         {
             var listServices = CreateService<IList>(apiKey, dataCenter);
-            var emailObject = CreateEmailObject(subscribedEmail, firstName, lastName);
+            var emailObject =
+                new
+                {
+                    email_address = subscribedEmail,
+                    merge_fields =
+                    new
+                    {
+                        FNAME = firstName,
+                        LNAME = lastName
+                    },
+                    status_if_new = "subscribed"
+                };
             var listResponse = listServices.AddEmailToList(listId, CalculateMd5Hash(subscribedEmail), emailObject);
             Console.WriteLine(listResponse.ResponseStatus);
         }
 
-        static object CreateEmailObject(string email, string firstName, string lastName)
-        {
-            return new
-            {
-                email_address = email,
-                merge_fields =
-                new
-                {
-                    FNAME = firstName,
-                    LNAME = lastName
-                },
-                status_if_new = "subscribed"
-            };
-        }
 
         static void CreateCampaign(string dataCenter, string apiKey, string listId)
         {
@@ -99,7 +97,7 @@ namespace Exercise_1
                 type = "regular",
                 settings = new
                 {
-                    subject_line = "Test send email",
+                    subject_line = "Test send email 2",
                     reply_to = "vanman.lqd@gmail.com",
                     from_name = "Man"
                 }
