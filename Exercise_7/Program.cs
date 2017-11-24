@@ -14,7 +14,15 @@ namespace Exercise_7
     {
         static void Main(string[] args)
         {
-            List<string> files = new List<string>(){"bus-services", "bus-services-5", "bus-services-7", "bus-services-8", "bus-services-11", "bus-services-12" };
+            List<string> files = new List<string>()
+            {
+                "bus-services",
+                "bus-services-5",
+                "bus-services-7",
+                "bus-services-8",
+                "bus-services-11",
+                "bus-services-12" 
+            };
             files.ForEach(ConvertJsonToXml);
             Console.ReadKey();
         }
@@ -23,33 +31,8 @@ namespace Exercise_7
             string fileInputPath = $"{fileName}.json";
             string fileOutputPath = $"{fileName}.xml";
             var xmlString = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(
-                Encoding.UTF8.GetBytes(ReadFromFile(fileInputPath)), new XmlDictionaryReaderQuotas())).ToString();
-            WriteToFile(xmlString, fileOutputPath);
-        }
-        static string ReadFromFile(string filePath)
-        {
-            try
-            {
-                return File.ReadAllText(filePath);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
-        static void WriteToFile(string content, string filePath)
-        {
-            try
-            {
-               File.WriteAllText(filePath, content, Encoding.UTF8);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+                Encoding.UTF8.GetBytes(File.ReadAllText(fileInputPath)), new XmlDictionaryReaderQuotas())).ToString();
+            File.WriteAllText(fileOutputPath, xmlString, Encoding.UTF8);
         }
     }
 }
