@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace Exercise_3
+using Exercise_3.Models;
+namespace Exercise_3.Models
 {
-    public class Weathers
+    public class WeatherInfo
     {
         public Coord Coord { get; set; }
         public List<Weather> Weather { get; set; }
@@ -30,17 +30,17 @@ namespace Exercise_3
             }
 
             return $"Coord: {Coord}" +
-                $"\nWeather: {weather}" +
-                $"\nBase: {Base}" +
-                $"\nMain: {Main}" +
-                $"\nVisibility: {Visibility}" +
-                $"\nWind: {Wind}" +
-                $"\nClouds: {Clouds}" +
-                $"\nDt: {Dt}" +
-                $"\nSys: {Sys}" +
-                $"\nId: {Id}" +
-                $"\nName: {Name}" +
-                $"\nCod: {Cod}";
+                   $"\nWeather: {weather}" +
+                   $"\nBase: {Base}" +
+                   $"\nMain: {Main}" +
+                   $"\nVisibility: {Visibility}" +
+                   $"\nWind: {Wind}" +
+                   $"\nClouds: {Clouds}" +
+                   $"\nDt: {Dt}" +
+                   $"\nSys: {Sys}" +
+                   $"\nId: {Id}" +
+                   $"\nName: {Name}" +
+                   $"\nCod: {Cod}";
         }
     }
 }
