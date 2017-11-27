@@ -16,55 +16,16 @@ namespace Exercise_1
     {
         static void Main(string[] args)
         {
-            var dataCenter = "us17";
-            var apiKey = "147a8c5d7fa281cd9a833e63b7f9eb7d-us17";
-            var listId = "5008e2e46c";
-            //CreateCampaign(dataCenter, apiKey, listId);
-            var campaignId = "0e212308ef";
             Console.Write("Enter the email to: ");
             var emailTo = Console.ReadLine();
-            AddEmailToList(dataCenter, apiKey, listId, emailTo, "Man", "Nguyen");
+            
             Console.Write("Enter the email content: ");
             var emailContent = Console.ReadLine();
 
-            SetContent(dataCenter, apiKey, campaignId, emailContent);
-            SendEmail(dataCenter, apiKey, campaignId);
+            Send(emailTo, emailContent);
             Console.ReadKey();
-
         }
-
-        static void CreateList(string dataCenter, string apiKey)
-        {
-            var listServices = CreateService<IList>(apiKey, dataCenter);
-            var listObject = new
-            {
-                name = "List",
-                contact = new
-                {
-                    company = "Novahub Studio",
-                    address1 = "271",
-                    address2 = "Nguyen Van Linh",
-                    city = "DN",
-                    state = "GA",
-                    zip = "01221",
-                    country = "VI",
-                    phone = ""
-                },
-                permission_reminder = "Remind something...",
-                campaign_defaults = new
-                {
-                    from_name = "Man",
-                    from_email = "vanman.lqd@gmail.com",
-                    subject = "MailChimp Demo",
-                    language = "en",
-                },
-                email_type_option = true
-            };
-
-            var listRespone = listServices.CreateList(listObject);
-            Console.WriteLine(listRespone.ResponseStatus);
-        }
-
+       
         static void AddEmailToList(string dataCenter, string apiKey, string listId, string subscribedEmail, string firstName, string lastName)
         {
             var listServices = CreateService<IList>(apiKey, dataCenter);
@@ -85,7 +46,7 @@ namespace Exercise_1
         }
 
 
-        static void CreateCampaign(string dataCenter, string apiKey, string listId)
+        static string CreateCampaign(string dataCenter, string apiKey, string listId)
         {
             var campaignServices = CreateService<ICampaign>(apiKey, dataCenter);
             var campaignObject = new
@@ -97,13 +58,15 @@ namespace Exercise_1
                 type = "regular",
                 settings = new
                 {
-                    subject_line = "Test send email 2",
+                    subject_line = "Test send email",
                     reply_to = "vanman.lqd@gmail.com",
                     from_name = "Man"
                 }
             };
             var campaignResponse = campaignServices.CreateCampaign(campaignObject);
+            var id = JsonConvert.DeserializeObject<CampaignId>(campaignResponse.Content).Id;
             Console.WriteLine(campaignResponse.ResponseStatus);
+            return id;
         }
 
         static void SetContent(string dataCenter, string apiKey, string campaignId, string content)
@@ -144,6 +107,17 @@ namespace Exercise_1
             restClient.Authenticator = new HttpBasicAuthenticator("username", apiKey);
             var restAdapter = new RestAdapter(restClient);
             return restAdapter.Create<T>();
+        }
+
+        static void Send(string emailTo, string content)
+        {
+            var dataCenter = "us17";
+            var apiKey = "147a8c5d7fa281cd9a833e63b7f9eb7d-us17";
+            var listId = "5008e2e46c";
+            var campaignId = CreateCampaign(dataCenter, apiKey, listId);
+            AddEmailToList(dataCenter, apiKey, listId, emailTo, "Man", "Nguyen");
+            SetContent(dataCenter, apiKey, campaignId, content);
+            SendEmail(dataCenter, apiKey, campaignId);
         }
     }
 }
